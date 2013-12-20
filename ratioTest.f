@@ -103,7 +103,6 @@ C                       Send a test load for calculations
                         call MPI_SEND (chunkSize,1,MPI_INTEGER
      +                       ,counter,
      +                      loadTestTag,MPI_COMM_WORLD,ierr)
-                        print *,'hit'
 C                       Get the reply
                         call MPI_RECV(calcElapsedTime,1
      +                       ,MPI_DOUBLE_PRECISION
