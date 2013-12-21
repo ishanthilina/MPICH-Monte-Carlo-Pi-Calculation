@@ -91,6 +91,9 @@ C           keeps track of total time (comm+calc)
             double precision :: elapsedTime=0  
             double precision :: startTime=0
             double precision :: endTime=0
+C           keeps track of the total excution time of the program
+            double precision :: programStartTime=0
+            double precision :: programEndTime=0  
 C           stores the ratio for a node
             double precision :: ratio = 0 
 C           desired Computation/Communication ratio
@@ -130,6 +133,7 @@ C           initialize the variables
 
             call MPI_INIT(ierr)
 
+
             if (ierr .ne. MPI_SUCCESS) then
                 print *,'Error starting MPI program. Terminating.'
                 call MPI_ABORT(MPI_COMM_WORLD,status, ierr)
@@ -142,6 +146,10 @@ C           ********************************************************
 C           Master Code
 C           ********************************************************           
             if (myRank .eq. master) then
+
+C               Mark the start time of the program  
+                programStartTime= MPI_WTIME()
+
 C                 print *,'master'
 C               Do load tests with every node
                 do counter=1,totalProcesses-1,1
@@ -308,8 +316,17 @@ C               send the quit message to everyone
                     call MPI_SEND (chunkSize,1,MPI_INTEGER
      +                       ,counter,
      +                      stopWorkTag,MPI_COMM_WORLD,ierr)                    
-                enddo  
-                    
+                enddo 
+
+C               marks the end time of the program
+
+                call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+
+                programEndTime= MPI_WTIME()
+                print *,'Program took ',
+     +              (programEndTime - programStartTime),
+     +              'seconds to complete' 
+
 C           ********************************************************
 C           Slave Code
 C           ********************************************************      
@@ -352,7 +369,7 @@ C                   if this is a request to do the actual work
 C                         print *,'work order for', myRank
 
                         call doTest(inCount,totCount)
-                        print *,myRank,inCount
+C                         print *,myRank,inCount
 
 C                       Send the calculated values to the master
                         call MPI_SEND(inCount,1
@@ -366,6 +383,7 @@ C                   if this a request to stop the work
 
                 enddo
 
+                call MPI_BARRIER(MPI_COMM_WORLD,ierr)
                
             endif
 
