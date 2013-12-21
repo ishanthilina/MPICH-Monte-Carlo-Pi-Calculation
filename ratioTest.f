@@ -12,7 +12,7 @@ c https://computing.llnl.gov/tutorials/mpi/man/MPI_Bsend.txt
 
             integer :: counter = 0
 
-            print *,totCount,':',inCount
+C             print *,totCount,':',inCount
 
             do counter=1,totCount,1
                 x = Rand(0)
@@ -24,7 +24,7 @@ C               checks whether the generated point is inside the circle
                 IF (d .LE. 1) THEN
 C                         print *,'in'         
                         inCount = inCount +1
-                     ENDIF
+                ENDIF
             enddo    
 
             inCount = 0
@@ -89,7 +89,7 @@ C           initialize the variables
 
 c           if master           
             if (myrank .eq. master) then
-                print *,'master'
+C                 print *,'master'
 C               Do load tests with every node
                 do counter=1,totalProcesses-1,1
 
@@ -115,11 +115,11 @@ C                       Get the reply
 C                       print *,'Total time taken by', counter, 'is',
 C      +                       elapsedTime
                         commElapsedTime = elapsedTime - calcElapsedTime
-                        print *,'Communication time for', counter,'is',
-     +                      commElapsedTime
+C                         print *,'Communication time for', counter,'is',
+C      +                      commElapsedTime
                         ratio = calcElapsedTime/commElapsedTime
-                        print *,'Comp/Comm ratio on',counter,'is',
-     +                      ratio
+                        print *,'Process:',counter,'   Chunk Size:',
+     +                      chunkSize,'   Comp/Comm Ratio:',ratio
 
 C                       Can stop this when the ratio > 1  
                         if (ratio .ge. desiredRatio) then
@@ -165,14 +165,15 @@ C                       print *,'running delay test on', myrank
 
 
 C                       print *,inBuffer
+C                       print *,'New chunk size for',myrank,'is',inBuffer  
                       call doTest(inCount,inBuffer)
                     
 
                     
                         calcEndTime = MPI_WTIME()
                         calcElapsedTime = calcEndTime - calcStartTime
-                        print *,'Calc time on ',myrank, 'is',
-     +                  calcElapsedTime 
+C                         print *,'Calc time on ',myrank, 'is',
+C      +                  calcElapsedTime 
 
 C                       Send the calculated values to the master
                         call MPI_SEND(calcElapsedTime,1
