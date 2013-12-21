@@ -3,8 +3,8 @@ c https://computing.llnl.gov/tutorials/mpi/
 c https://computing.llnl.gov/tutorials/mpi/man/MPI_Bsend.txt
 		
         subroutine doTest(inCount, totCount)
-            integer totCount
-            integer inCount
+            integer*8 totCount
+            integer*8 inCount
 
             REAL :: x
             REAL :: y
@@ -36,10 +36,10 @@ C                         print *,'in'
      +       ,totalExperiments
      +       ,totalPositiveResults,pi)
 
-            integer newInCount
-            integer newTotCount
-            integer totalExperiments
-            integer totalPositiveResults
+            integer*8 newInCount
+            integer*8 newTotCount
+            integer*8 totalExperiments
+            integer*8 totalPositiveResults
             double precision pi 
 
             totalPositiveResults = newInCount+totalPositiveResults
@@ -72,13 +72,13 @@ c           keeps track of the rank of a process
             integer :: myRank
             integer :: totalProcesses
 C           stores the total number of experiments in a test  
-            integer :: totCount
+            integer*8 :: totCount
 C           Total points inside the circle in a test  
-            integer :: inCount
+            integer*8 :: inCount
 C           total number of experiments carried out
-            integer :: totalExperiments = 0
+            integer*8 :: totalExperiments = 0
 C           total number of inside circle results
-            integer :: totalPositiveResults = 0  
+            integer*8 :: totalPositiveResults = 0  
 C           keeps track of the number of running slaves now
 C             integer :: runningSlaves = 0    
 C           keeps track of calculation time
@@ -104,18 +104,18 @@ C           tags to define various operations
 C           a counter
             integer :: counter=0
 C           an array to store the weights for the nodes
-            integer weights(1000)
+            integer*8 weights(1000)
 C           store the node which sent the last message
             integer :: prevNode  
 C           Defines the chunk size when load testing
-            integer :: initialChunkSize = 10000000
+            integer*8 :: initialChunkSize = 10000000
 C           Defines the amount to increase the chunk size
             integer :: increment = 500000
 C           defines the chunk size in an iteration
-            integer :: chunkSize
+            integer*8 :: chunkSize
 
 C           defines the maximum difference between two consecutive errors
-            double precision :: epsilon = 0.00000001
+            double precision :: epsilon = 1e-10
 C           how many times of continouos convergences needed?
             integer :: neededConvergences = 3
 C           keeps track of the number of converged times
