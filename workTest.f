@@ -3,6 +3,9 @@ c https://computing.llnl.gov/tutorials/mpi/
 c https://computing.llnl.gov/tutorials/mpi/man/MPI_Bsend.txt
 		
         subroutine doTest(inCount, totCount)
+
+            implicit none
+
             integer*8 totCount
             integer*8 inCount
 
@@ -34,24 +37,36 @@ C                         print *,'in'
 
         subroutine calculatePi(newInCount,newTotCount
      +       ,totalExperiments
-     +       ,totalPositiveResults,pi)
+     +       ,totalPositiveResults,newPi)
+
+            implicit none
 
             integer*8 newInCount
             integer*8 newTotCount
             integer*8 totalExperiments
             integer*8 totalPositiveResults
-            double precision pi 
+            double precision newPi
+
+C           reset the value of pi
+            newPi = 0.0685956978795 
 
             totalPositiveResults = newInCount+totalPositiveResults
             totalExperiments = newTotCount+totalExperiments
 
-            print *,'newInCount',newInCount
-            print *,'newTotCount',newTotCount
-            print *,'totalPositiveResults',totalPositiveResults
-            print *,'totalExperiments',totalExperiments
+C             print *,'newInCount',newInCount
+C             print *,'newTotCount',newTotCount
+C             print *,'totalPositiveResults',totalPositiveResults
+C             print *,'totalExperiments',totalExperiments
+            
 
-            pi = (totalPositiveResults/(totalExperiments*1.0))*4
-C             print *,'pi',pi
+C             newPi = ((totalPositiveResults*1.0)/
+C      +           (totalExperiments*1.0))*4.
+            newPi = (DBLE(totalPositiveResults)/
+     +           DBLE(totalExperiments))*4.
+C             print *,'pi',newpi
+            print *,newPi,newInCount,totalPositiveResults,
+     +          newTotCount,totalExperiments
+C             print *,'************************************'
 
         end subroutine calculatePi
 	    
@@ -237,7 +252,7 @@ C                   Check if there are replies
      +                   ,MPI_COMM_WORLD,flag,status,ierr)
 C                   if there is a reply
                     if(flag .eq. 1) then
-                        print *,'new data!'
+C                         print *,'new data!'
 C                       get the experminet result 
                         prevNode = status(MPI_SOURCE)
                         call MPI_RECV(inCount,1,MPI_INTEGER
@@ -288,12 +303,12 @@ C                       store the value of pi
      +                       totalPositiveResults,newPi)
                     endif
 
-                    print *,'newpi',newpi
+C                     print *,'newpi',newpi
 
 C                     REMOVE
-                    if (newpi .lt. 0) then
-                        exit
-                    endif
+C                     if (newpi .lt. 0) then
+C                         exit
+C                     endif
 
 
 C                   if the error is less than the accepted level  
@@ -304,7 +319,7 @@ C                   if the error is less than the accepted level
                     endif    
                     
 C                     REMOVE
-                    print *,'*****************************'
+C                     print *,'*****************************'
  
                 enddo 
 
@@ -383,6 +398,7 @@ C                   if this a request to stop the work
 
                 enddo
 
+C               Wait till everybody finishes
                 call MPI_BARRIER(MPI_COMM_WORLD,ierr)
                
             endif
