@@ -162,6 +162,8 @@ C           Master Code
 C           ********************************************************           
             if (myRank .eq. master) then
 
+              call SRand(12321+myRank)
+
 C               Mark the start time of the program  
                 programStartTime= MPI_WTIME()
 
