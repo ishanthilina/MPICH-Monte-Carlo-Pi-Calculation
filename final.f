@@ -29,6 +29,15 @@ C from other nodes.
 C The program stops when the difference of two consecutive PI values is less than a
 C pre-defined epsilon value.
 
+C How to run..?
+C =============
+
+C mpif77 final.f 
+C mpiexec -n N  ./a.out
+
+C where N is the number of processes you need
+
+
 C       Does the Monte-Carlo tests for a number of 'totCount's
         subroutine doTest(inCount, totCount)
 

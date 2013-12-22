@@ -7,6 +7,15 @@ The basic idea of the program is to approximate the value of PI using the Monte-
 What's Special..?
 =================
 This is a naive effort to implement a dynamic load balancing scheme among nodes.
+
+How to run..?
+=============
+```
+mpif77 final.f 
+mpiexec -n N  ./a.out
+```
+where N is the number of processes you need.
+
 A Summary Of The Program Flow
 ===============================
 At the start of the program, master process calculates the communication delay with each process by sending a random number to each process in sequence and calculating the round-trip time. Then master sends this round-trip time to the relevant process.
