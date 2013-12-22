@@ -9,8 +9,6 @@ What's Special..?
 This is a naive effort to implement a dynamic load balancing scheme among nodes.
 A Summary Of The Program Flow
 ===============================
-R.P.I.T. Somasiri | 090498L | ishanthilina@gmail.com | www.ishans.info
-
 At the start of the program, master process calculates the communication delay with each process by sending a random number to each process in sequence and calculating the round-trip time. Then master sends this round-trip time to the relevant process.
 
 Up on receiving that value, each slave process calculates a chunk size to carry out the Monte-Carlo experiments. The chunk size is increased until the Computation time for the chunk is greater than the communication time (with the master). Once the chunk size is calculated, the master process is informed about the minimum chunk size out of all these using a MPI_Reduce operation.
