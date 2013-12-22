@@ -37,6 +37,9 @@ C mpiexec -n N  ./a.out
 
 C where N is the number of processes you need
 
+C (A more elaborative copy of this documenatation can be accessed from 
+C https://github.com/ishanthilina/MPICH-Monte-Carlo-Pi-Calculation )
+
 
 C       Does the Monte-Carlo tests for a number of 'totCount's
         subroutine doTest(inCount, totCount)
