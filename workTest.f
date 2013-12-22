@@ -48,7 +48,7 @@ C                         print *,'in'
             double precision newPi
 
 C           reset the value of pi
-            newPi = 0.0685956978795 
+C             newPi = 0.0685956978795 
 
             totalPositiveResults = newInCount+totalPositiveResults
             totalExperiments = newTotCount+totalExperiments
