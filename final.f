@@ -37,9 +37,9 @@ C       Does the Monte-Carlo tests for a number of 'totCount's
             integer*8 totCount
             integer*8 inCount
 
-            REAL :: x
-            REAL :: y
-            REAL :: d
+            real :: x
+            real :: y
+            real :: d
 
             integer :: counter = 0
 
@@ -47,13 +47,13 @@ C       Does the Monte-Carlo tests for a number of 'totCount's
                 x = Rand(0)
                 y = Rand(0)
 
-                d = SQRT(x*x+y*y)
+                d = sqrt(x*x+y*y)
 
 C               checks whether the generated point is inside the circle
-                IF (d .LE. 1) THEN
+                if (d .le. 1) then
 C                         print *,'in'         
                         inCount = inCount +1
-                ENDIF
+                endif
             enddo    
 
         end subroutine doTest
@@ -70,8 +70,8 @@ C       experiments conducted
             integer*8 totalPositiveResults
             double precision newPi
 
-            newPi = (DBLE(totalPositiveResults)/
-     +           DBLE(totalExperiments))*4.
+            newPi = (dble(totalPositiveResults)/
+     +           dble(totalExperiments))*4.
 
             print *,'PI:',newPi,'| Total Positive:',totalPositiveResults
      +          ,'| Total Tries:',totalExperiments
@@ -142,18 +142,18 @@ C           stores the new pi value (after a calculation)
 C           stores the old pi value
             double precision :: oldPi = 1000
 
-        	call MPI_INIT(ierr)
+        	call mpi_init(ierr)
 
         	if (ierr .ne. MPI_SUCCESS) then
          	    print *,'Error starting MPI program. Terminating.'
-                call MPI_ABORT(MPI_COMM_WORLD,status, ierr)
+                call mpi_abort(MPI_COMM_WORLD,status, ierr)
         	end if
 
 C           Mark the start time of the program  
-            programStartTime= MPI_WTIME()
+            programStartTime= mpi_wtime()
 
-        	call MPI_COMM_RANK(MPI_COMM_WORLD, myRank, ierr)
-            call MPI_COMM_SIZE(MPI_COMM_WORLD,totalProcesses,ierr)
+        	call mpi_comm_rank(MPI_COMM_WORLD, myRank, ierr)
+            call mpi_comm_size(MPI_COMM_WORLD,totalProcesses,ierr)
 
 c 			***********************************************
 C           Master code
@@ -171,26 +171,26 @@ C               Get current system time and initialize the random number generat
 
 C               Start the communication latency test for slaves
                 do counter=1,totalProcesses-1,1
-                    startTime = MPI_WTIME()
+                    startTime = mpi_wtime()
 C                   send a random number to the slave
-                    call MPI_SEND(Rand(0),1,MPI_REAL,counter,
+                    call mpi_send(Rand(0),1,MPI_REAL,counter,
      +                  commTestTag,MPI_COMM_WORLD,ierr) 
-                    call MPI_RECV(realBuffer,1,MPI_REAL,counter,
+                    call mpi_recv(realBuffer,1,MPI_REAL,counter,
      +               commTestTag,MPI_COMM_WORLD,status,ierr)
 
 C                   Calculate the time taken
-                    elapsedTime = MPI_WTIME() - startTime
+                    elapsedTime = mpi_wtime() - startTime
 
 C                   send the time taken to the slave so that the slave can decide
 C                   on a suitable chunk size
-                    call MPI_SEND(elapsedTime,1,MPI_DOUBLE_PRECISION,
+                    call mpi_send(elapsedTime,1,MPI_DOUBLE_PRECISION,
      +                  counter,commTestTag,MPI_COMM_WORLD,ierr)   
 
 
                 enddo
 
 C               get the smallest chunk size of the others as masters chunk size
-                call MPI_REDUCE(HUGE(myChunkSize),
+                call mpi_reduce(huge(myChunkSize),
      +               myChunkSize,1,MPI_INTEGER8,MPI_MIN,
      +               master,MPI_COMM_WORLD)
 
@@ -210,11 +210,11 @@ C                   run the loop till the calculation converges
 
 
 C                   Check if there are replies from other nodes
-                    call MPI_IPROBE(MPI_ANY_SOURCE,resultsTag
+                    call mpi_iprobe(MPI_ANY_SOURCE,resultsTag
      +                   ,MPI_COMM_WORLD,flag,status,ierr) 
 C                   if there is a reply
                     if(flag .eq. 1) then
-                        call MPI_RECV(results,2,MPI_INTEGER8
+                        call mpi_recv(results,2,MPI_INTEGER8
      +                       ,status(MPI_SOURCE),resultsTag
      +                       ,MPI_COMM_WORLD,status,ierr)
 
@@ -247,18 +247,18 @@ C                   check for convergence
 
 C               convergence complete, ask everybody to quit work
                 do counter=1,totalProcesses-1,1
-                    call MPI_SEND(0,1,MPI_INTEGER
+                    call mpi_send(0,1,MPI_INTEGER
      +                       ,counter,
      +                      stopWorkTag,MPI_COMM_WORLD,ierr)                    
                 enddo
 
 
 C               marks the end time of the program
-                call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+                call mpi_barrier(MPI_COMM_WORLD,ierr)
 
 
                 print *,'Total execution time (Seconds):',
-     +              (MPI_WTIME() - programStartTime)
+     +              (mpi_wtime() - programStartTime)
 
                 print *,'Calculated value of PI is :',newpi            
 
@@ -275,34 +275,34 @@ C               Get current system time and initialize the random number generat
 
 
 C               Code to calculate the communication delay
-                call MPI_RECV(realBuffer,1,MPI_REAL,master,
+                call mpi_recv(realBuffer,1,MPI_REAL,master,
      +               commTestTag,MPI_COMM_WORLD,status,ierr)
 
 C               introduce artificial delay
                 call sleep(myRank)    
 C               send an immediate reply to check the communication delay  
-				call MPI_SEND(realBuffer,1,MPI_REAL,master,
+				call mpi_send(realBuffer,1,MPI_REAL,master,
      +                  commTestTag,MPI_COMM_WORLD,ierr)
 
 C               obtain the communication latency details from the master
-                call MPI_RECV(commTime,1,MPI_DOUBLE_PRECISION,
+                call mpi_recv(commTime,1,MPI_DOUBLE_PRECISION,
      +               master,commTestTag,MPI_COMM_WORLD,status,ierr)
 
 C               assuming sends and receives cost equal time
-                commTime = commTime/DBLE(2)
+                commTime = commTime/dble(2)
                 print *,'Node',myRank,
      +           'communication overhead is',commTime,'seconds'  
 
 C               increase the chunk size till it exceeds the desired ratio
                 do
-                   startTime = MPI_WTIME()
+                   startTime = mpi_wtime()
 
 C                  do the test  
                    call doTest(totalPositive, myChunkSize)
                    totalExperiments = totalExperiments+ myChunkSize
 
 C                  Calculate the time taken
-                   elapsedTime = MPI_WTIME() - startTime
+                   elapsedTime = mpi_wtime() - startTime
 
 C                  calculate the ratio
                    myRatio = elapsedTime / commTime
@@ -321,7 +321,7 @@ C                  else increase the chunk size
                 enddo
 
 C               send the calculated chunk size to the msater
-                call MPI_REDUCE(myChunkSize,
+                call mpi_reduce(myChunkSize,
      +               myChunkSize,1,MPI_INTEGER8,MPI_MIN,
      +               master,MPI_COMM_WORLD)
 
@@ -329,13 +329,13 @@ C               send the calculated chunk size to the msater
 C               Send the current results to master
                 results(1) = totalPositive
                 results(2) = totalExperiments
-                call MPI_ISEND(results,2,MPI_INTEGER8,master,
+                call mpi_isend(results,2,MPI_INTEGER8,master,
      +                  resultsTag,MPI_COMM_WORLD,lastRequest,ierr)   
 
 C               Time for node to start actual work
                 do
 C                   check whether there are any incoming instructions from master
-                    call MPI_IPROBE(master,MPI_ANY_TAG
+                    call mpi_iprobe(master,MPI_ANY_TAG
      +                  ,MPI_COMM_WORLD,flag,status,ierr)
 
 C                   if this a request to stop the work
@@ -354,21 +354,21 @@ C                   conduct the experiment
                     results(2) = totalExperiments
 
 C                   wait till the previous message is sent
-                    call MPI_WAIT(lastRequest
+                    call mpi_wait(lastRequest
      +                       ,status)
 
 C                   send the results
-                    call MPI_ISEND(results,2,MPI_INTEGER8,master,
+                    call mpi_isend(results,2,MPI_INTEGER8,master,
      +                  resultsTag,MPI_COMM_WORLD,lastRequest,ierr)
 
                 enddo 
 
 C               Wait till everybody finishes
-                call MPI_BARRIER(MPI_COMM_WORLD,ierr)                  
+                call mpi_barrier(MPI_COMM_WORLD,ierr)                  
 
         	endif
 
 
-        	call MPI_FINALIZE(ierr) 
+        	call mpi_finalize(ierr) 
 
 		 end program main
