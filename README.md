@@ -4,6 +4,7 @@ The basic idea of the program is to approximate the value of PI using the Monte-
 ```
  PI = (Total number of points inside the unit circle/Total number of tests) * 4
 ```
+An approach using Pthreads and C for the same problem can be found [here](https://github.com/ishanthilina/Pthreads-Monte-Carlo-Pi-Calculation)
 What's Special..?
 =================
 This is a naive effort to implement a dynamic load balancing scheme among nodes.
